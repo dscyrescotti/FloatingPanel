@@ -116,7 +116,11 @@ public class FloatingPanelController: UIViewController, UIScrollViewDelegate, UI
     private var layoutInsetsObservations: [NSKeyValueObservation] = []
     
     
-    public var isEstTimeViewEnable = true
+    public var isEstTimeViewEnable = true {
+        didSet {
+            surfaceView.isEstTimeViewEnable = isEstTimeViewEnable
+        }
+    }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)

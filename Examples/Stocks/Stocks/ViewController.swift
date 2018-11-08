@@ -26,6 +26,7 @@ class ViewController: UIViewController, FloatingPanelControllerDelegate {
         fpc.delegate = self
         fpc.isEstTimeViewEnable = true
     
+        fpc.surfaceView.lblEstMin.text = "Some"
 
         // Initialize FloatingPanelController and add the view
         fpc.surfaceView.backgroundColor = UIColor(displayP3Red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0, alpha: 1.0)
