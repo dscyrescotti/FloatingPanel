@@ -114,6 +114,9 @@ public class FloatingPanelController: UIViewController, UIScrollViewDelegate, UI
 
     private var floatingPanel: FloatingPanel!
     private var layoutInsetsObservations: [NSKeyValueObservation] = []
+    
+    
+    public var isEstTimeViewEnable = true
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -138,6 +141,7 @@ public class FloatingPanelController: UIViewController, UIScrollViewDelegate, UI
 
         let view = FloatingPanelSurfaceView()
         view.backgroundColor = .white
+        view.isEstTimeViewEnable = isEstTimeViewEnable
 
         self.view = view as UIView
     }
