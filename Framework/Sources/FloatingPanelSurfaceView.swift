@@ -58,6 +58,49 @@ public class FloatingPanelSurfaceView: UIView {
 
     private var shadowLayer: CAShapeLayer!  { didSet { setNeedsLayout() } }
 
+    let estTimeContianerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        return view
+    }()
+    
+    let estTimeView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.borderColor = UIColor(red: 0, green: 139, blue: 248, alpha: 1).cgColor
+        view.layer.borderWidth = 1
+        return view
+    }()
+    
+    public lazy var lblEstMin: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "Barlow-Regular", size: 32)
+        label.textColor = UIColor(red: 8, green: 12, blue: 78, alpha: 1)
+        label.textAlignment = .center
+        label.text = "1-5"
+        return label
+    }()
+    
+    lazy var lblMin: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "Barlow-Medium", size: 12)
+        label.textColor = UIColor(red: 8, green: 12, blue: 78, alpha: 1)
+        label.textAlignment = .center
+        label.text = "MIN"
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        return label
+    }()
+    
+    public var isEstTimeViewEnable = true {
+        didSet {
+            estTimeContianerView.isHidden = !isEstTimeViewEnable
+        }
+    }
+    
     private struct Default {
         public static let grabberTopPadding: CGFloat = 6.0
     }
@@ -92,6 +135,8 @@ public class FloatingPanelSurfaceView: UIView {
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0.0),
             ])
 
+        isEstTimeViewEnable ? setupEstTimeView() : nil
+        
         let grabberHandle = GrabberHandleView()
         addSubview(grabberHandle)
         self.grabberHandle = grabberHandle
@@ -104,6 +149,41 @@ public class FloatingPanelSurfaceView: UIView {
             grabberHandle.centerXAnchor.constraint(equalTo: centerXAnchor),
             ])
     }
+    
+    private func setupEstTimeView() {
+        addSubview(estTimeContianerView)
+        
+        NSLayoutConstraint.activate([
+            estTimeContianerView.widthAnchor.constraint(equalToConstant: 80),
+            estTimeContianerView.heightAnchor.constraint(equalToConstant: 80),
+            estTimeContianerView.rightAnchor.constraint(equalTo: rightAnchor, constant: -20),
+            estTimeContianerView.centerYAnchor.constraint(equalTo: topAnchor)
+            ])
+        
+        
+        estTimeContianerView.addSubview(estTimeView)
+        NSLayoutConstraint.activate([
+            estTimeView.rightAnchor.constraint(equalTo: estTimeContianerView.rightAnchor, constant: -5),
+            estTimeView.leftAnchor.constraint(equalTo: estTimeContianerView.leftAnchor, constant: 5),
+            estTimeView.topAnchor.constraint(equalTo: estTimeContianerView.topAnchor, constant: 5),
+            estTimeView.bottomAnchor.constraint(equalTo: estTimeContianerView.bottomAnchor, constant: -5)
+            ])
+        
+        estTimeView.addSubview(lblEstMin)
+        estTimeView.addSubview(lblMin)
+        
+        NSLayoutConstraint.activate([
+            lblEstMin.rightAnchor.constraint(equalTo: estTimeView.rightAnchor, constant: -1),
+            lblEstMin.leftAnchor.constraint(equalTo: estTimeView.leftAnchor, constant: 1),
+            lblEstMin.topAnchor.constraint(equalTo: estTimeView.topAnchor, constant: 8)
+            ])
+        
+        NSLayoutConstraint.activate([
+            lblMin.centerXAnchor.constraint(equalTo: estTimeView.centerXAnchor),
+            lblMin.bottomAnchor.constraint(equalTo: estTimeView.bottomAnchor, constant: -6)
+            ])
+        
+    }
 
     public override func layoutSubviews() {
         super.layoutSubviews()
@@ -114,6 +194,10 @@ public class FloatingPanelSurfaceView: UIView {
         contentView.layer.borderColor = borderColor?.cgColor
         contentView.layer.borderWidth = borderWidth
         contentView.backgroundColor = color
+        
+        estTimeContianerView.layer.cornerRadius = 40
+        estTimeView.layer.cornerRadius = estTimeView.frame.height / 2
+        
     }
 
     private func updateShadowLayer() {

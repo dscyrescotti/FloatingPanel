@@ -62,9 +62,10 @@ class FloatingPanel: NSObject, UIGestureRecognizerDelegate, UIScrollViewDelegate
         backdropView.backgroundColor = .black
         backdropView.alpha = 0.0
 
-        self.layoutAdapter = FloatingPanelLayoutAdapter(surfaceView: surfaceView,
-                                                        backdropView: backdropView,
-                                                        layout: layout)
+        let extractedExpr = FloatingPanelLayoutAdapter(surfaceView: surfaceView,
+                                                       backdropView: backdropView,
+                                                       layout: layout)
+        self.layoutAdapter = extractedExpr
         self.behavior = behavior
 
         panGesture = FloatingPanelPanGestureRecognizer()
