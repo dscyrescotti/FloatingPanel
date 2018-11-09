@@ -146,13 +146,9 @@ public class FloatingPanelController: UIViewController, UIScrollViewDelegate, UI
         super.willTransition(to: newCollection, with: coordinator)
 
         // Change layout for a new trait collection
-        floatingPanel.layoutAdapter.layout = fetchLayout(for: newCollection)
+        updateLayout(for: newCollection)
+
         floatingPanel.behavior = fetchBehavior(for: newCollection)
-
-        guard let parent = parent else { fatalError() }
-
-        floatingPanel.layoutAdapter.prepareLayout(toParent: parent)
-        floatingPanel.layoutAdapter.activateLayout(of: floatingPanel.state)
     }
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -199,6 +195,15 @@ public class FloatingPanelController: UIViewController, UIScrollViewDelegate, UI
         }
     }
 
+    private func updateLayout(for: UITraitCollection) {
+        floatingPanel.layoutAdapter.layout = fetchLayout(for: view.traitCollection)
+
+        guard let parent = parent else { return }
+
+        floatingPanel.layoutAdapter.prepareLayout(toParent: parent)
+        floatingPanel.layoutAdapter.activateLayout(of: floatingPanel.state)
+    }
+
     // MARK: - Container view controller interface
 
     /// Adds the view managed by the controller as a child of the specified view controller.
@@ -243,9 +248,9 @@ public class FloatingPanelController: UIViewController, UIScrollViewDelegate, UI
 
         // Must set a layout again here because `self.traitCollection` is applied correctly once it's added to a parent VC
         floatingPanel.layoutAdapter.layout = fetchLayout(for: traitCollection)
-        floatingPanel.layoutViews(in: parent)
-
         floatingPanel.behavior = fetchBehavior(for: traitCollection)
+
+        floatingPanel.setUpViews(in: parent)
 
         floatingPanel.present(animated: animated) { [weak self] in
             guard let self = self else { return }
@@ -341,7 +346,12 @@ public class FloatingPanelController: UIViewController, UIScrollViewDelegate, UI
         }
     }
 
-    // MARK: - Helpers
+    // MARK: - Utilities
+
+    /// Updates the layout object from the delegate.
+    public func updateLayout() {
+        updateLayout(for: view.traitCollection)
+    }
 
     /// Returns the y-coordinate of the point at the origin of the surface view
     public func originYOfSurface(for pos: FloatingPanelPosition) -> CGFloat {
