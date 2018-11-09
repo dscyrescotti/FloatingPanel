@@ -9,6 +9,8 @@
 import UIKit
 import FloatingPanel
 
+var bottomInset: CGFloat = 56.0
+
 class ViewController: UIViewController, FloatingPanelControllerDelegate {
     @IBOutlet var topBannerView: UIImageView!
     @IBOutlet weak var labelStackView: UIStackView!
@@ -51,6 +53,11 @@ class ViewController: UIViewController, FloatingPanelControllerDelegate {
             topBannerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
             topBannerView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 0.0),
             ])
+        
+        Timer.scheduledTimer(withTimeInterval: 60, repeats: false) { _ in
+            bottomInset = 130
+            self.fpc.updateLayout()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -114,9 +121,9 @@ class FloatingPanelStocksLayout: FloatingPanelLayout {
 
     func insetFor(position: FloatingPanelPosition) -> CGFloat? {
         switch position {
-        case .full: return 56.0
+        case .full: return 56
         case .half: return 262.0
-        case .tip: return 85.0 + 44.0 // Visible + ToolView
+        case .tip: return bottomInset //85.0 + 44.0 // Visible + ToolView
         }
     }
 
