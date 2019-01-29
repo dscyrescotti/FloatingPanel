@@ -105,7 +105,7 @@ public class FloatingPanelSurfaceView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont(name: "Barlow-Medium", size: 14)
-        label.textColor = UIColor(red: 8/255, green: 12/255, blue: 78/255, alpha: 1)
+        label.textColor = UIColor(red: 0/255, green: 139/255, blue: 248/255, alpha: 1)
         label.textAlignment = .center
         label.text = "MIN"
         label.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -195,7 +195,7 @@ public class FloatingPanelSurfaceView: UIView {
         
         NSLayoutConstraint.activate([
             lblMin.centerXAnchor.constraint(equalTo: estTimeView.centerXAnchor),
-            lblMin.bottomAnchor.constraint(equalTo: estTimeView.bottomAnchor, constant: -6)
+            lblMin.bottomAnchor.constraint(equalTo: lblEstMin.bottomAnchor)
         ])
         
     }
