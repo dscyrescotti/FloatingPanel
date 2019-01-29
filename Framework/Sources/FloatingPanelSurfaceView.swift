@@ -9,21 +9,24 @@ class FloatingPanelSurfaceContentView: UIView {}
 
 /// A view that presents a surface interface in a floating panel.
 public class FloatingPanelSurfaceView: UIView {
-    
-    /// A GrabberHandleView object displayed at the top of the surface view
+
+    /// A GrabberHandleView object displayed at the top of the surface view.
+    ///
+    /// To use a custom grabber handle, hide this and then add the custom one
+    /// to the surface view at appropirate coordinates.
     public var grabberHandle: GrabberHandleView!
     
     /// The height of the grabber bar area
     public static var topGrabberBarHeight: CGFloat {
         return Default.grabberTopPadding * 2 + GrabberHandleView.Default.height // 17.0
     }
-    
-    /// A UIView object that can have the surface view added to it.
-    public var contentView: UIView!
-    
+
+    /// A root view of a content view controller
+    public weak var contentView: UIView!
+
     private var color: UIColor? = .white { didSet { setNeedsLayout() } }
-    private var bottomOverflow: CGFloat = 0.0 // Must not call setNeedsLayout()
-    
+    var bottomOverflow: CGFloat = 0.0 // Must not call setNeedsLayout()
+
     public override var backgroundColor: UIColor? {
         get { return color }
         set { color = newValue }
@@ -61,7 +64,10 @@ public class FloatingPanelSurfaceView: UIView {
     let estTimeContianerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(red: 245/255, green: 247/255, blue: 248/255, alpha: 1)
+        view.clipsToBounds = true
+        view.backgroundColor = .white //UIColor(red: 245/255, green: 247/255, blue: 248/255, alpha: 1)
+        view.layer.borderWidth = 1
+        view.layer.borderColor =  UIColor(red: 76/255, green: 187/255, blue: 255/255, alpha: 1).cgColor
         return view
     }()
     
@@ -69,16 +75,27 @@ public class FloatingPanelSurfaceView: UIView {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .white
-        view.layer.borderColor = UIColor(red: 76/255, green: 187/255, blue: 255/255, alpha: 1).cgColor
-        view.layer.borderWidth = 1
+        //view.layer.borderColor = UIColor(red: 76/255, green: 187/255, blue: 255/255, alpha: 1).cgColor
+        //view.layer.borderWidth = 1
         return view
+    }()
+    
+    lazy var lblEta: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "Barlow-Medium", size: 14)
+        label.textColor = UIColor(red: 8/255, green: 12/255, blue: 78/255, alpha: 1)
+        label.textAlignment = .center
+        label.text = "ETA"
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        return label
     }()
     
     public lazy var lblEstMin: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont(name: "Barlow-Regular", size: 32)
-        label.textColor = UIColor(red: 8/255, green: 12/255, blue: 78/255, alpha: 1)
+        label.font = UIFont(name: "Barlow-Medium", size: 32)
+        label.textColor = UIColor(red: 0/255, green: 139/255, blue: 248/255, alpha: 1)
         label.textAlignment = .center
         label.text = "1-5"
         return label
@@ -87,7 +104,7 @@ public class FloatingPanelSurfaceView: UIView {
     lazy var lblMin: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont(name: "Barlow-Medium", size: 12)
+        label.font = UIFont(name: "Barlow-Medium", size: 14)
         label.textColor = UIColor(red: 8/255, green: 12/255, blue: 78/255, alpha: 1)
         label.textAlignment = .center
         label.text = "MIN"
@@ -101,6 +118,9 @@ public class FloatingPanelSurfaceView: UIView {
         }
     }
     
+
+    private var backgroundLayer: CAShapeLayer!  { didSet { setNeedsLayout() } }
+
     private struct Default {
         public static let grabberTopPadding: CGFloat = 6.0
     }
@@ -109,8 +129,8 @@ public class FloatingPanelSurfaceView: UIView {
         super.init(frame: frame)
         render()
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         render()
     }
@@ -118,25 +138,11 @@ public class FloatingPanelSurfaceView: UIView {
     private func render() {
         super.backgroundColor = .clear
         self.clipsToBounds = false
-        
-        let shadowLayer = CAShapeLayer()
-        layer.insertSublayer(shadowLayer, at: 0)
-        self.shadowLayer = shadowLayer
-        
-        let contentView = FloatingPanelSurfaceContentView()
-        addSubview(contentView)
-        self.contentView = contentView as UIView
-        contentView.backgroundColor = color
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: topAnchor, constant: 0.0),
-            contentView.leftAnchor.constraint(equalTo: leftAnchor, constant: 0.0),
-            contentView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0.0),
-            contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0.0),
-            ])
-        
-        setupEstTimeView()
-        
+
+        let backgroundLayer = CAShapeLayer()
+        layer.insertSublayer(backgroundLayer, at: 0)
+        self.backgroundLayer = backgroundLayer
+
         let grabberHandle = GrabberHandleView()
         addSubview(grabberHandle)
         self.grabberHandle = grabberHandle
@@ -148,14 +154,16 @@ public class FloatingPanelSurfaceView: UIView {
             grabberHandle.heightAnchor.constraint(equalToConstant: grabberHandle.frame.height),
             grabberHandle.centerXAnchor.constraint(equalTo: centerXAnchor),
             ])
+
+        setupEstTimeView()
     }
     
     private func setupEstTimeView() {
         addSubview(estTimeContianerView)
         
         NSLayoutConstraint.activate([
-            estTimeContianerView.widthAnchor.constraint(equalToConstant: 80),
-            estTimeContianerView.heightAnchor.constraint(equalToConstant: 80),
+            estTimeContianerView.widthAnchor.constraint(equalToConstant: 100),
+            estTimeContianerView.heightAnchor.constraint(equalToConstant: 100),
             estTimeContianerView.rightAnchor.constraint(equalTo: rightAnchor, constant: -20),
             estTimeContianerView.centerYAnchor.constraint(equalTo: topAnchor)
             ])
@@ -163,44 +171,50 @@ public class FloatingPanelSurfaceView: UIView {
         
         estTimeContianerView.addSubview(estTimeView)
         NSLayoutConstraint.activate([
-            estTimeView.rightAnchor.constraint(equalTo: estTimeContianerView.rightAnchor, constant: -5),
-            estTimeView.leftAnchor.constraint(equalTo: estTimeContianerView.leftAnchor, constant: 5),
-            estTimeView.topAnchor.constraint(equalTo: estTimeContianerView.topAnchor, constant: 5),
-            estTimeView.bottomAnchor.constraint(equalTo: estTimeContianerView.bottomAnchor, constant: -5)
-            ])
+            estTimeView.rightAnchor.constraint(equalTo: estTimeContianerView.rightAnchor),
+            estTimeView.leftAnchor.constraint(equalTo: estTimeContianerView.leftAnchor),
+            estTimeView.topAnchor.constraint(equalTo: estTimeContianerView.topAnchor),
+            estTimeView.bottomAnchor.constraint(equalTo: estTimeContianerView.bottomAnchor)
+        ])
         
+        estTimeView.addSubview(lblEta)
         estTimeView.addSubview(lblEstMin)
         estTimeView.addSubview(lblMin)
         
         NSLayoutConstraint.activate([
+            lblEta.rightAnchor.constraint(equalTo: estTimeView.rightAnchor, constant: -1),
+            lblEta.leftAnchor.constraint(equalTo: estTimeView.leftAnchor, constant: 1),
+            lblEta.topAnchor.constraint(equalTo: estTimeView.topAnchor, constant: 12)
+        ])
+        
+        NSLayoutConstraint.activate([
             lblEstMin.rightAnchor.constraint(equalTo: estTimeView.rightAnchor, constant: -1),
             lblEstMin.leftAnchor.constraint(equalTo: estTimeView.leftAnchor, constant: 1),
-            lblEstMin.topAnchor.constraint(equalTo: estTimeView.topAnchor, constant: 8)
-            ])
+            lblEstMin.topAnchor.constraint(equalTo: lblEta.bottomAnchor, constant: 0)
+        ])
         
-            NSLayoutConstraint.activate([
-                lblMin.centerXAnchor.constraint(equalTo: estTimeView.centerXAnchor),
-                lblMin.bottomAnchor.constraint(equalTo: estTimeView.bottomAnchor, constant: -6)
-                ])
+        NSLayoutConstraint.activate([
+            lblMin.centerXAnchor.constraint(equalTo: estTimeView.centerXAnchor),
+            lblMin.bottomAnchor.constraint(equalTo: estTimeView.bottomAnchor, constant: -6)
+        ])
         
     }
     
     public override func layoutSubviews() {
         super.layoutSubviews()
-        
-        updateShadowLayer()
+        log.debug("SurfaceView frame", frame)
+
+        updateLayers()
         updateContentViewMask()
+
+        contentView?.layer.borderColor = borderColor?.cgColor
+        contentView?.layer.borderWidth = borderWidth
+        contentView?.frame = bounds
         
-        contentView.layer.borderColor = borderColor?.cgColor
-        contentView.layer.borderWidth = borderWidth
-        contentView.backgroundColor = color
-        
-        estTimeContianerView.layer.cornerRadius = 40
-        estTimeView.layer.cornerRadius = estTimeView.frame.height / 2
-        
+        estTimeContianerView.layer.cornerRadius = 8
     }
-    
-    private func updateShadowLayer() {
+
+    private func updateLayers() {
         log.debug("SurfaceView bounds", bounds)
         
         var rect = bounds
@@ -208,14 +222,14 @@ public class FloatingPanelSurfaceView: UIView {
         let path = UIBezierPath(roundedRect: rect,
                                 byRoundingCorners: [.topLeft, .topRight],
                                 cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
-        shadowLayer.path = path.cgPath
-        shadowLayer.fillColor = color?.cgColor
+        backgroundLayer.path = path.cgPath
+        backgroundLayer.fillColor = color?.cgColor
+		
         if shadowHidden == false {
-            shadowLayer.shadowPath = shadowLayer.path
-            shadowLayer.shadowColor = shadowColor.cgColor
-            shadowLayer.shadowOffset = shadowOffset
-            shadowLayer.shadowOpacity = shadowOpacity
-            shadowLayer.shadowRadius = shadowRadius
+            layer.shadowColor = shadowColor.cgColor
+            layer.shadowOffset = shadowOffset
+            layer.shadowOpacity = shadowOpacity
+            layer.shadowRadius = shadowRadius
         }
     }
     
@@ -231,29 +245,23 @@ public class FloatingPanelSurfaceView: UIView {
                                     byRoundingCorners: [.topLeft, .topRight],
                                     cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
             maskLayer.path = path.cgPath
-            contentView.layer.mask = maskLayer
+            contentView?.layer.mask = maskLayer
         } else {
             // Don't use `contentView.layer.mask` because of a UIVisualEffectView issue in iOS 10, https://forums.developer.apple.com/thread/50854
             // Instead, a user can mask the content view manually in an application.
         }
     }
-    
-    func set(bottomOverflow: CGFloat) {
-        self.bottomOverflow = bottomOverflow
-        updateShadowLayer()
-        updateContentViewMask()
-    }
-    
-    
-    func add(childView: UIView) {
-        contentView.addSubview(childView)
-        childView.frame = contentView.bounds
-        childView.translatesAutoresizingMaskIntoConstraints = false
+
+    func add(contentView: UIView) {
+        insertSubview(contentView, belowSubview: grabberHandle)
+        self.contentView = contentView
+        /* contentView.frame = bounds */ // MUST NOT: Because the top safe area inset of a content VC will be incorrect.
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            childView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0.0),
-            childView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 0.0),
-            childView.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: 0.0),
-            childView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0.0),
+            contentView.topAnchor.constraint(equalTo: topAnchor, constant: 0.0),
+            contentView.leftAnchor.constraint(equalTo: leftAnchor, constant: 0.0),
+            contentView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0.0),
+            contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0.0),
             ])
     }
 }
