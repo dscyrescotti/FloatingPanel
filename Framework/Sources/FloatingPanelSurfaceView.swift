@@ -195,7 +195,7 @@ public class FloatingPanelSurfaceView: UIView {
         
         NSLayoutConstraint.activate([
             lblMin.centerXAnchor.constraint(equalTo: estTimeView.centerXAnchor),
-            lblMin.bottomAnchor.constraint(equalTo: lblEstMin.bottomAnchor)
+            lblMin.bottomAnchor.constraint(equalTo: lblEstMin.bottomAnchor, constant: 5)
         ])
         
     }
