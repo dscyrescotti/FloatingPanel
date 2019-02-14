@@ -83,7 +83,7 @@ public class FloatingPanelSurfaceView: UIView {
     lazy var lblEta: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont(name: "Barlow-Medium", size: 14)
+        label.font = UIFont(name: "Barlow-Bold", size: 14)
         label.textColor = UIColor(red: 8/255, green: 12/255, blue: 78/255, alpha: 1)
         label.textAlignment = .center
         label.text = "ETA"
@@ -94,10 +94,10 @@ public class FloatingPanelSurfaceView: UIView {
     public lazy var lblEstMin: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont(name: "Barlow-Medium", size: 32)
+        label.font = UIFont(name: "Barlow-Medium", size: 24)
         label.textColor = UIColor(red: 0/255, green: 139/255, blue: 248/255, alpha: 1)
         label.textAlignment = .center
-        label.text = "1-5"
+        label.text = "1-5 min"
         return label
     }()
     
@@ -162,8 +162,8 @@ public class FloatingPanelSurfaceView: UIView {
         addSubview(estTimeContianerView)
         
         NSLayoutConstraint.activate([
-            estTimeContianerView.widthAnchor.constraint(equalToConstant: 100),
-            estTimeContianerView.heightAnchor.constraint(equalToConstant: 100),
+            estTimeContianerView.widthAnchor.constraint(equalToConstant: 112),
+            estTimeContianerView.heightAnchor.constraint(equalToConstant: 60),
             estTimeContianerView.rightAnchor.constraint(equalTo: rightAnchor, constant: -20),
             estTimeContianerView.centerYAnchor.constraint(equalTo: topAnchor)
             ])
@@ -179,7 +179,7 @@ public class FloatingPanelSurfaceView: UIView {
         
         estTimeView.addSubview(lblEta)
         estTimeView.addSubview(lblEstMin)
-        estTimeView.addSubview(lblMin)
+        //estTimeView.addSubview(lblMin)
         
         NSLayoutConstraint.activate([
             lblEta.rightAnchor.constraint(equalTo: estTimeView.rightAnchor, constant: -1),
@@ -193,10 +193,10 @@ public class FloatingPanelSurfaceView: UIView {
             lblEstMin.topAnchor.constraint(equalTo: lblEta.bottomAnchor, constant: 0)
         ])
         
-        NSLayoutConstraint.activate([
-            lblMin.centerXAnchor.constraint(equalTo: estTimeView.centerXAnchor),
-            lblMin.topAnchor.constraint(equalTo: lblEstMin.bottomAnchor)
-        ])
+//        NSLayoutConstraint.activate([
+//            lblMin.centerXAnchor.constraint(equalTo: estTimeView.centerXAnchor),
+//            lblMin.topAnchor.constraint(equalTo: lblEstMin.bottomAnchor)
+//        ])
         
     }
     
