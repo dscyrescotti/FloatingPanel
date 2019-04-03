@@ -61,7 +61,7 @@ public class FloatingPanelSurfaceView: UIView {
     
     private var shadowLayer: CAShapeLayer!  { didSet { setNeedsLayout() } }
     
-    let imgCircle: UIImageView = {
+    public let imgCircle: UIImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFill
         view.translatesAutoresizingMaskIntoConstraints = false
