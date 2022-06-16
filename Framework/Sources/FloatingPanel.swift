@@ -165,7 +165,7 @@ class FloatingPanel: NSObject, UIGestureRecognizerDelegate, UIScrollViewDelegate
         /* log.debug("shouldBeRequiredToFailBy", otherGestureRecognizer) */
         return false
     }
-
+  
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         guard gestureRecognizer == panGesture else { return false }
 
@@ -292,6 +292,8 @@ class FloatingPanel: NSObject, UIGestureRecognizerDelegate, UIScrollViewDelegate
             case .ended, .cancelled, .failed:
                 panningEnd(with: translation, velocity: velocity)
             case .possible:
+                break
+            @unknown default:
                 break
             }
         default:

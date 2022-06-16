@@ -4,7 +4,7 @@
 //
 
 import XCTest
-@testable import FloatingPanelController
+@testable import FloatingPanel
 
 class ViewTests: XCTestCase {
 
