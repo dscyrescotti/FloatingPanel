@@ -330,7 +330,7 @@ public class FloatingPanelController: UIViewController, UIScrollViewDelegate, UI
             parent.view.addSubview(self.view)
         }
 
-        parent.addChild(self)
+        parent.addChildViewController(self)
 
 
         view.frame = parent.view.bounds // Needed for a correct safe area configuration
@@ -362,7 +362,7 @@ public class FloatingPanelController: UIViewController, UIScrollViewDelegate, UI
             guard let `self` = self else { return }
             self.willMove(toParent: nil)
             self.view.removeFromSuperview()
-            self.removeFromParent()
+            self.removeFromParentViewController()
             completion?()
         }
     }
@@ -433,7 +433,7 @@ public class FloatingPanelController: UIViewController, UIScrollViewDelegate, UI
             if #available(iOS 11.0, *) {
                 scrollView.contentInsetAdjustmentBehavior = .never
             } else {
-                children.forEach { (vc) in
+                childViewControllers.forEach { (vc) in
                     vc.automaticallyAdjustsScrollViewInsets = false
                 }
             }

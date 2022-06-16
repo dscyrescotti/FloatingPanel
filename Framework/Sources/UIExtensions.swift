@@ -73,7 +73,6 @@ extension UIView {
     }
 }
 
-
 extension UIGestureRecognizer.State: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
