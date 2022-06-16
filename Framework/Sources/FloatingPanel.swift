@@ -293,6 +293,8 @@ class FloatingPanel: NSObject, UIGestureRecognizerDelegate, UIScrollViewDelegate
                 panningEnd(with: translation, velocity: velocity)
             case .possible:
                 break
+            @unknown default:
+                break
             }
         default:
             return
@@ -633,7 +635,7 @@ class FloatingPanel: NSObject, UIGestureRecognizerDelegate, UIScrollViewDelegate
     // Distance travelled after decelerating to zero velocity at a constant rate.
     // Refer to the slides p176 of [Designing Fluid Interfaces](https://developer.apple.com/videos/play/wwdc2018/803/)
     private func project(initialVelocity: CGFloat) -> CGFloat {
-        let decelerationRate = UIScrollViewDecelerationRateNormal
+        let decelerationRate = UIScrollView.DecelerationRate.normal.rawValue
         return (initialVelocity / 1000.0) * decelerationRate / (1.0 - decelerationRate)
     }
 

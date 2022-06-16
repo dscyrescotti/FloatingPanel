@@ -36,7 +36,7 @@ public extension FloatingPanelIntrinsicLayout {
     }
 }
 
-public protocol FloatingPanelLayout: class {
+public protocol FloatingPanelLayout: AnyObject {
     /// Returns the initial position of a floating panel.
     var initialPosition: FloatingPanelPosition { get }
 
@@ -240,7 +240,7 @@ class FloatingPanelLayoutAdapter {
     }
 
     func updateIntrinsicHeight() {
-        let fittingSize = UILayoutFittingCompressedSize
+        let fittingSize = UIView.layoutFittingCompressedSize
         var intrinsicHeight = surfaceView.contentView?.systemLayoutSizeFitting(fittingSize).height ?? 0.0
         var safeAreaBottom: CGFloat = 0.0
         if #available(iOS 11.0, *) {

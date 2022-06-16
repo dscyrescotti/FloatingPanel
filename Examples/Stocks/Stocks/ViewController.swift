@@ -124,6 +124,7 @@ class FloatingPanelStocksLayout: FloatingPanelLayout {
         case .full: return 56
         case .half: return 262.0
         case .tip: return bottomInset //85.0 + 44.0 // Visible + ToolView
+        case .hidden: return nil
         }
     }
 
