@@ -73,8 +73,7 @@ extension UIView {
     }
 }
 
-
-extension UIGestureRecognizerState: CustomDebugStringConvertible {
+extension UIGestureRecognizer.State: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
         case .began: return "Began"
@@ -83,6 +82,7 @@ extension UIGestureRecognizerState: CustomDebugStringConvertible {
         case .cancelled: return "Cancelled"
         case .ended: return "Endeded"
         case .possible: return "Possible"
+        @unknown default: return "Unknown"
         }
     }
 }

@@ -165,7 +165,7 @@ class FloatingPanel: NSObject, UIGestureRecognizerDelegate, UIScrollViewDelegate
         /* log.debug("shouldBeRequiredToFailBy", otherGestureRecognizer) */
         return false
     }
-
+  
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         guard gestureRecognizer == panGesture else { return false }
 
@@ -292,6 +292,8 @@ class FloatingPanel: NSObject, UIGestureRecognizerDelegate, UIScrollViewDelegate
             case .ended, .cancelled, .failed:
                 panningEnd(with: translation, velocity: velocity)
             case .possible:
+                break
+            @unknown default:
                 break
             }
         default:
@@ -633,7 +635,7 @@ class FloatingPanel: NSObject, UIGestureRecognizerDelegate, UIScrollViewDelegate
     // Distance travelled after decelerating to zero velocity at a constant rate.
     // Refer to the slides p176 of [Designing Fluid Interfaces](https://developer.apple.com/videos/play/wwdc2018/803/)
     private func project(initialVelocity: CGFloat) -> CGFloat {
-        let decelerationRate = UIScrollViewDecelerationRateNormal
+        let decelerationRate = UIScrollView.DecelerationRate.normal.rawValue
         return (initialVelocity / 1000.0) * decelerationRate / (1.0 - decelerationRate)
     }
 
